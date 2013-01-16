@@ -1,0 +1,11 @@
+<config>
+    <host>alhena</host>
+    <port>7480</port>
+    <username>fedoraAdmin</username>
+    <password>fedoraAdminPass</password>
+    <datastreams>
+        <datastream>BROADCAST_METADATA</datastream>
+        <datastream>FFPROBE</datastream>
+        <datastream>FFPROBE_ERRORS</datastream>
+    </datastreams>
+</config>
