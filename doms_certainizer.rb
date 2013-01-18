@@ -19,9 +19,11 @@ OptionParser.new do |o|
     o.on('-p', '--port PORT') {|port| $port = port.to_i}
     o.on('-i', '--input FILENAME') {|input| $input_file = input}
     o.on('-o', '--output FILENAME') { |output| $output_file = output }
-    o.on('-m', '--missing-files-log FILENAME') { |file| $missing_files = File.open(file, "w") }
+    o.on('-e', '--extra FILENAME') { |file| $extra_files = File.open(file, "w") }
+    o.on('-m', '--missing FILENAME') { |file| $missing_files = File.open(file, "w") }
     o.on('-l', '--limit LIMIT') {|limit| $limit = limit.to_i}
-    o.on('-r', '--required-files FILENAME') do |file|
+    o.on('-s', '--state required state') {|state| $required_state = state}
+    o.on('-r', '--required FILENAME') do |file|
         $required_files ||= []
         File.open(file).each_line do |line|
             match = line.match /[0-9a-f]{32} \d+ (?<filename>.+)/
@@ -213,14 +215,22 @@ if __FILE__ ==  $0
     dc.run
     dc.print_statistics
     puts
-    files_found = dc.objects_found.map {|object| object[:filename]}
-    missing = ($required_files - files_found).map {|file| "-#{file}"}
-    extra = (files_found - $required_files).map{|file| "+#{file}"}
+
+    objects_found = dc.objects_found
+    objects_found = objects_found.select {|object| object[:state] == $required_state} if $required_state
+    files_found = objects_found.map {|object| object[:filename]}
+
+    missing = $required_files - files_found
     if $missing_files
         $missing_files.puts missing
-        $missing_files.puts extra
     else
-        puts missing
-        puts extra
+        puts missing.map {|file| "-#{file}"}
+    end
+
+    extra = files_found - $required_files
+    if $extra_files
+        $extra_files.puts extra
+    else
+        puts extra.map{|file| "+#{file}"}
     end
 end
