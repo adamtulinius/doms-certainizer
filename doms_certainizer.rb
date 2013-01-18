@@ -101,7 +101,7 @@ end
 
 class DomsCertainizer
     attr_accessor :report_interval
-    attr_reader :loop_time, :parse_time, :average, :processed_items, :files_found
+    attr_reader :loop_time, :parse_time, :average, :processed_items, :objects_found
 
     def initialize
         @output = OutputWriter.new($output_file)
@@ -135,7 +135,7 @@ class DomsCertainizer
         @parse_time = 0
         @average = 0
         @processed_items = 0
-        @files_found = []
+        @objects_found = []
     end
 
     def escaped_query
@@ -203,8 +203,7 @@ class DomsCertainizer
 
     private
     def complete_object(current_object)
-        @output.write(current_object)
-        @files_found << current_object[:filename]
+        @objects_found << current_object
     end
 end
 
@@ -214,5 +213,14 @@ if __FILE__ ==  $0
     dc.run
     dc.print_statistics
     puts
-    $missing_files.puts ($required_files - dc.files_found)
+    files_found = dc.objects_found.map {|object| object[:filename]}
+    missing = ($required_files - files_found).map {|file| "-#{file}"}
+    extra = (files_found - $required_files).map{|file| "+#{file}"}
+    if $missing_files
+        $missing_files.puts missing
+        $missing_files.puts extra
+    else
+        puts missing
+        puts extra
+    end
 end
