@@ -42,8 +42,9 @@ class DomsRiquery
     end
 
     def run
+        puts "Visiting: #{uri}"
         t_start = Time.now
-        input = open(uri, :http_basic_authentication => [$username, $password])
+        input = open(uri, :http_basic_authentication => [$username, $password], :read_timeout => nil)
         puts "#{input.count} results in #{Time.now - t_start}s"
     end
 end
