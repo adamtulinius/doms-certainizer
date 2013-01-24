@@ -13,6 +13,8 @@ OptionParser.new do |o|
     end
     o.on('-h', '--host HOST') {|host| $host = host}
     o.on('-p', '--port PORT') {|port| $port = port.to_i}
+    o.on('-u', '--username USERNAME') {|username| $username = username}
+    o.on('--password PASSWORD') {|password| $password = password}
     o.on('-l', '--limit LIMIT') {|limit| $limit = limit.to_i}
     o.on_tail('--help') { puts o; exit }
     o.parse!
